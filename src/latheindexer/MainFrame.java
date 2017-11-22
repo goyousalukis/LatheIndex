@@ -14,11 +14,15 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButton;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import jssc.SerialPortList;
 
 /**
  *
@@ -26,8 +30,8 @@ import jssc.SerialPortException;
  */
 public class MainFrame extends javax.swing.JFrame {
     static SerialPort serialPort;
-    
-    
+    private Preferences prefsMainFrame;
+    public String currentPort;
  
     javax.swing.table.DefaultTableModel myModel = new javax.swing.table.DefaultTableModel (
             new Object [][] {
@@ -86,6 +90,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         //myModel.addRow(new Object [] {"test","test","test"});
         //myModel.removeRow(1);
+        prefsMainFrame = Preferences.userNodeForPackage(this.getClass());
         initComponents();
         updateValues();
     }
@@ -117,6 +122,8 @@ public class MainFrame extends javax.swing.JFrame {
         butConnect = new javax.swing.JButton();
         butClose = new javax.swing.JButton();
         butUnlock = new javax.swing.JButton();
+        jButtonZero = new javax.swing.JButton();
+        jButtonHome = new javax.swing.JButton();
         panelOptions = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         txtRadius = new javax.swing.JTextField();
@@ -136,12 +143,20 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jTextFieldSerialString = new javax.swing.JTextField();
+        jButtonSendSerialString = new javax.swing.JButton();
+        jTextFieldStepsPerDegree = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
         panelTable = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tableGRBL = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         txtStatus = new javax.swing.JTextField();
+        jMenuBarMainMenu = new javax.swing.JMenuBar();
+        jMenuSerialPort = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -290,6 +305,20 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        jButtonZero.setText("Zero");
+        jButtonZero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonZeroActionPerformed(evt);
+            }
+        });
+
+        jButtonHome.setText("Home");
+        jButtonHome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonHomeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelMainLayout = new javax.swing.GroupLayout(panelMain);
         panelMain.setLayout(panelMainLayout);
         panelMainLayout.setHorizontalGroup(
@@ -301,7 +330,9 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(butConnect)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(butClose))
-                    .addComponent(butUnlock))
+                    .addComponent(butUnlock)
+                    .addComponent(jButtonZero)
+                    .addComponent(jButtonHome))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(platePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -315,7 +346,11 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(butClose))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(butUnlock)
-                .addGap(85, 85, 85)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonZero)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonHome)
+                .addGap(21, 21, 21)
                 .addComponent(ctrlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -392,6 +427,15 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel9.setText("MicroSteps:");
 
+        jButtonSendSerialString.setText("Send->");
+        jButtonSendSerialString.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSendSerialStringActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setText("Steps/degree:");
+
         javax.swing.GroupLayout panelOptionsLayout = new javax.swing.GroupLayout(panelOptions);
         panelOptions.setLayout(panelOptionsLayout);
         panelOptionsLayout.setHorizontalGroup(
@@ -404,25 +448,32 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(jLabel7)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel9))
+                    .addComponent(jLabel9)
+                    .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel10)
+                        .addComponent(jButtonSendSerialString)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jTextFieldSmallPulley, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldLargePulley, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtRadius, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
-                    .addComponent(txtDivisions, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPhasing, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldMicroSteps))
                 .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelOptionsLayout.createSequentialGroup()
-                        .addGap(91, 91, 91)
+                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jTextFieldSmallPulley, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldLargePulley, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtRadius, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+                            .addComponent(txtDivisions, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtPhasing, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldMicroSteps))
                         .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(butRefreshInfo)
-                            .addComponent(butClear)
-                            .addComponent(butPublish)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelOptionsLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(butProcessInfo)))
+                            .addGroup(panelOptionsLayout.createSequentialGroup()
+                                .addGap(91, 91, 91)
+                                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(butRefreshInfo)
+                                    .addComponent(butClear)
+                                    .addComponent(butPublish)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelOptionsLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(butProcessInfo))))
+                    .addComponent(jTextFieldSerialString, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldStepsPerDegree, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtPaneGRBL, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(37, Short.MAX_VALUE))
@@ -432,33 +483,35 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(panelOptionsLayout.createSequentialGroup()
                 .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelOptionsLayout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(txtRadius, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(11, 11, 11)
-                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(txtDivisions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(txtPhasing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextFieldLargePulley, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7))
-                        .addGap(18, 18, 18)
-                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextFieldSmallPulley, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8))
-                        .addGap(18, 18, 18)
-                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldMicroSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9)))
-                    .addGroup(panelOptionsLayout.createSequentialGroup()
                         .addContainerGap()
+                        .addComponent(txtPaneGRBL, javax.swing.GroupLayout.PREFERRED_SIZE, 548, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelOptionsLayout.createSequentialGroup()
                         .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelOptionsLayout.createSequentialGroup()
+                                .addGap(25, 25, 25)
+                                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(txtRadius, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(11, 11, 11)
+                                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(txtDivisions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(txtPhasing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jTextFieldLargePulley, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel7))
+                                .addGap(18, 18, 18)
+                                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jTextFieldSmallPulley, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8))
+                                .addGap(18, 18, 18)
+                                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextFieldMicroSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel9)))
                             .addGroup(panelOptionsLayout.createSequentialGroup()
                                 .addComponent(butRefreshInfo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -466,8 +519,15 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(butPublish)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(butProcessInfo))
-                            .addComponent(txtPaneGRBL, javax.swing.GroupLayout.PREFERRED_SIZE, 548, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(butProcessInfo)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldStepsPerDegree, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10))
+                        .addGap(31, 31, 31)
+                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldSerialString, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSendSerialString))))
                 .addContainerGap(256, Short.MAX_VALUE))
         );
 
@@ -512,6 +572,28 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtStatus.setText("jTextField1");
 
+        jMenuSerialPort.setText("Serial Port");
+        jMenuSerialPort.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jMenuSerialPortItemStateChanged(evt);
+            }
+        });
+        jMenuBarMainMenu.add(jMenuSerialPort);
+
+        jMenu2.setText("Tools");
+
+        jMenuItem1.setText("jMenuItem1");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
+        jMenuBarMainMenu.add(jMenu2);
+
+        setJMenuBar(jMenuBarMainMenu);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -535,7 +617,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6)
                     .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane1.getAccessibleContext().setAccessibleName("Main");
@@ -543,8 +625,13 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    @SuppressWarnings("empty-statement")
     private void updateValues()
     {
+        //if (currentPort == null) currentPort = "empty";
+            
+        
+        currentPort = prefsMainFrame.get("CURRENTPORT", "empty");
         int tempRad = plateComponent2.getRadius();
         txtRadius.setText(Integer.toString(tempRad));
         int tempDiv = plateComponent2.getDivisions();
@@ -563,10 +650,36 @@ public class MainFrame extends javax.swing.JFrame {
             rbPhase2.setSelected(true);
         if (tempCurPhasing == 3)
             rbPhase3.setSelected(true);
+        float tempFloat =  ((float)plateComponent2.largePulley / (float)plateComponent2.smallPulley);
+        System.out.println(tempFloat);
         txtAreaInfo.setText(plateComponent2.getInfo());
-        //txtAreaInfo.setText("");
+        jTextFieldLargePulley.setText(Integer.toString(plateComponent2.largePulley));
+        jTextFieldSmallPulley.setText(Integer.toString(plateComponent2.smallPulley));
+        jTextFieldMicroSteps.setText(Integer.toString(plateComponent2.microSteps));
+        jTextFieldStepsPerDegree.setText(Integer.toString((int)(((tempFloat*200)*plateComponent2.microSteps))/360));
         
+        ButtonGroup butGrpSerialPorts = new javax.swing.ButtonGroup();        
+        JRadioButton rbItem1 = new JRadioButton("Item1!");
+        rbItem1.setActionCommand("ITEM1!");
+        JRadioButton rbItem2 = new JRadioButton("Item2!");
+
+        String[] portNames = SerialPortList.getPortNames();
         
+        for (int x = 0; x < portNames.length; x++)
+        {
+            JRadioButton newBut = new JRadioButton(portNames[x]);
+            butGrpSerialPorts.add(newBut);
+            newBut.setActionCommand(portNames[x]);
+            jMenuSerialPort.add(newBut);
+            newBut.addActionListener((java.awt.event.ActionEvent evt) -> {
+                System.out.println("test");
+                System.out.println(evt.getActionCommand());
+                currentPort = evt.getActionCommand();
+                prefsMainFrame.put("CURRENTPORT", evt.getActionCommand());
+            
+            });
+        }
+        System.out.println("Current Port:" + currentPort);
                 
     }
     
@@ -574,10 +687,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         int limit = plateComponent2.getDivisions();
         int index = plateComponent2.getIndex();
+        int phase = plateComponent2.getCurPhase();
         index++;
         if (index == limit) index = 0;
         plateComponent2.setIndex(index);
-        System.out.println(index);
+        System.out.println(index + "." + phase);
         txtIndex.setText(Integer.toString(index));
 
     }//GEN-LAST:event_butForwardActionPerformed
@@ -633,7 +747,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void butConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butConnectActionPerformed
     if (serialPort == null) {
-    serialPort = new SerialPort("/dev/ttyACM0");
+    //serialPort = new SerialPort("/dev/ttyACM0");
+    serialPort = new SerialPort(currentPort);
         try {
             serialPort.openPort();
             serialPort.setParams(115200,8,1,0);
@@ -654,6 +769,7 @@ public class MainFrame extends javax.swing.JFrame {
             {
                 serialPort.closePort();
                 serialPort = null;
+                System.out.println("Serial Port Closed");
             }
             
         }
@@ -700,6 +816,50 @@ public class MainFrame extends javax.swing.JFrame {
     private void butProcessInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butProcessInfoActionPerformed
         processInfo(plateComponent2.getInfo());
     }//GEN-LAST:event_butProcessInfoActionPerformed
+
+    private void jButtonSendSerialStringActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendSerialStringActionPerformed
+        String toSend = jTextFieldSerialString.getText() +"\n";
+        //System.out.println(toSend);
+        try {
+            serialPort.writeString(toSend);
+            System.out.println("Wrote: " + toSend);
+            this.repaint();
+            txtAreaInfo.setText("");
+            txtAreaInfo.setText(plateComponent2.getInfo());
+        }
+        catch (SerialPortException ex) {
+            System.out.println("Exception");
+            System.out.println(ex);
+        }        
+        
+    }//GEN-LAST:event_jButtonSendSerialStringActionPerformed
+
+    private void jButtonHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHomeActionPerformed
+        try {
+            serialPort.writeString("G28\n");
+            System.out.println("Wrote: G28\n");
+            this.repaint();
+            txtAreaInfo.setText("");
+            txtAreaInfo.setText(plateComponent2.getInfo());
+        }
+        catch (SerialPortException ex) {
+            System.out.println("Exception");
+            System.out.println(ex);
+        }
+    }//GEN-LAST:event_jButtonHomeActionPerformed
+
+    private void jButtonZeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonZeroActionPerformed
+        plateComponent2.setIndex(0);
+        plateComponent2.repaint();
+    }//GEN-LAST:event_jButtonZeroActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuSerialPortItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jMenuSerialPortItemStateChanged
+    System.out.println("Item State Changed");        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuSerialPortItemStateChanged
 
     private void processInfo(String str)
     {
@@ -787,7 +947,11 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton butReverse;
     private javax.swing.JButton butUnlock;
     private javax.swing.JPanel ctrlPanel;
+    private javax.swing.JButton jButtonHome;
+    private javax.swing.JButton jButtonSendSerialString;
+    private javax.swing.JButton jButtonZero;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -796,12 +960,18 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBarMainMenu;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenu jMenuSerialPort;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextFieldLargePulley;
     private javax.swing.JTextField jTextFieldMicroSteps;
+    private javax.swing.JTextField jTextFieldSerialString;
     private javax.swing.JTextField jTextFieldSmallPulley;
+    private javax.swing.JTextField jTextFieldStepsPerDegree;
     private javax.swing.JPanel panelMain;
     private javax.swing.JPanel panelOptions;
     private javax.swing.JPanel panelTable;

@@ -38,6 +38,10 @@ public class plateComponent extends JComponent{
     private int aIndex;
     private int aCurPhase;
     private String aInfo;
+    public int largePulley;
+    public int smallPulley;
+    public int microSteps;
+    public int stepsPerDegree;
     
     public plateComponent() {
         //this.setPreferredSize(new Dimension(600,1000));
@@ -56,6 +60,10 @@ public class plateComponent extends JComponent{
         aIndex = prefs.getInt("INDEX",0);
         aCurPhase = prefs.getInt("CURPHASE", 0);
         aInfo = prefs.get("INFO", "Empty");
+        largePulley = prefs.getInt("LARGEPULLEY", 36);
+        smallPulley = prefs.getInt("SMALLPULLEY", 10);
+        microSteps = prefs.getInt("MICROSTEPS", 16);
+        
         
         System.out.println(this.getClass().getName());
        // System.out.println(aInfo);
@@ -173,17 +181,17 @@ public class plateComponent extends JComponent{
         Dimension d = getSize();
         int centerX = d.width / 2;
         int centerY = d.width / 2;
-        //double aRatio = ((aRadius+60)*2)/(1.0 * img.getWidth());
-        //BufferedImage img2 = scale(img,img.getType(),(aRadius+60)*2,(aRadius+60)*2,aRatio,aRatio);
-        //g2.drawImage(img2,centerX-(img2.getWidth()/2),centerY-(img2.getHeight()/2),this);
+        double aRatio = ((aRadius+60)*2)/(1.0 * img.getWidth());
+        BufferedImage img2 = scale(img,img.getType(),(aRadius+60)*2,(aRadius+60)*2,aRatio,aRatio);
+        g2.drawImage(img2,centerX-(img2.getWidth()/2),centerY-(img2.getHeight()/2),this);
         int phasedDivisions = aDivisions * aPhasing;
         //System.out.println(aPhasing);
         double newDiv = phasedDivisions;
         double divAngle = 360  / newDiv;
         //System.out.println("Div angle is:" + divAngle);
         g2.setColor(Color.white);
-        g2.setPaint(new GradientPaint(0,0,Color.DARK_GRAY, 1000, 0 ,Color.WHITE));
-        fillCenteredCircle(g2, centerX, centerY, 2 * (aRadius +15));
+        g2.setPaint(new GradientPaint(0,0,Color.blue, 1000, 0 ,Color.WHITE));
+        //fillCenteredCircle(g2, centerX, centerY, 2 * (aRadius +15));
         g2.setColor(Color.BLACK);
         
         for (int div = 0; div <phasedDivisions; div++)
